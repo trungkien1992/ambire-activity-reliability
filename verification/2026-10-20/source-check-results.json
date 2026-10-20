@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-10-20T12:49:10.985Z",
+  "helperSha256": "4a13b8296ceb3d9b7c1e5884f66a6631dec2ef8fbcfaa2602847fe0f5f291c05",
+  "identicalCandidateHelpers": true,
+  "helperStrictTypecheckPassed": true,
+  "changedFileFormattingPassed": true,
+  "typescriptVersion": "5.9.3",
+  "prettierVersion": "3.3.3",
+  "strictFlags": [
+    "--noEmit",
+    "--strict",
+    "--noImplicitReturns",
+    "--noUncheckedIndexedAccess",
+    "--target",
+    "ES2022",
+    "--module",
+    "ES2022",
+    "--moduleResolution",
+    "node",
+    "--lib",
+    "ES2022,DOM",
+    "--types",
+    "node",
+    "--skipLibCheck"
+  ],
+  "scope": "Strict check of new helper only; actual controllers bundled and runtime tested separately. Full upstream repository typecheck/Jest/ESLint not run."
+}

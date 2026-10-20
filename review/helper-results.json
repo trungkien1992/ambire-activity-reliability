@@ -1,0 +1,238 @@
+{
+  "passed": 39,
+  "failed": 0,
+  "results": [
+    {
+      "candidate": "pr35",
+      "name": "default preserves direct promise and synchronous error behavior",
+      "passed": true,
+      "durationMs": 1
+    },
+    {
+      "candidate": "pr35",
+      "name": "constructor validates both caller budgets",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "pr35",
+      "name": "pending receipt deduplicates case variants and late answer is consumed once",
+      "passed": true,
+      "durationMs": 11
+    },
+    {
+      "candidate": "pr35",
+      "name": "receipt and transaction requests use independent caches",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "pr35",
+      "name": "replacement provider with same hash has independent lookup",
+      "passed": true,
+      "durationMs": 9
+    },
+    {
+      "candidate": "pr35",
+      "name": "event-loop delayed success remains available to the next explicit refresh",
+      "passed": true,
+      "durationMs": 26
+    },
+    {
+      "candidate": "pr35",
+      "name": "event-loop delayed rejection preserves timeout then original error",
+      "passed": true,
+      "durationMs": 26
+    },
+    {
+      "candidate": "pr35",
+      "name": "mixed-age waiters deliver to eligible waiter without retaining consumed answer",
+      "passed": true,
+      "durationMs": 72
+    },
+    {
+      "candidate": "pr35",
+      "name": "normal errors and synchronous opt-in errors preserve error identity and retry",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "pr35",
+      "name": "late rejection is handled and available to the next explicit refresh",
+      "passed": true,
+      "durationMs": 8
+    },
+    {
+      "candidate": "pr35",
+      "name": "completed answer expires autonomously and later refresh retries",
+      "passed": true,
+      "durationMs": 40
+    },
+    {
+      "candidate": "pr35",
+      "name": "fresh completed answer consumption clears its expiry timer",
+      "passed": true,
+      "durationMs": 9
+    },
+    {
+      "candidate": "pr35",
+      "name": "expired completed answer is rejected even before its cleanup timer can run",
+      "passed": true,
+      "durationMs": 34
+    },
+    {
+      "candidate": "pr35",
+      "name": "BUG: same-job disposal prevents a provider request that has not started yet",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "pr35",
+      "name": "disposal rejects active waiters, clears timers, blocks new opt-in requests and tolerates late settlement",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "pr35",
+      "name": "disposal clears completed-answer metadata timer and late rejection handler remains safe",
+      "passed": true,
+      "durationMs": 17
+    },
+    {
+      "candidate": "pr35",
+      "name": "repeated timed-out refreshes attach a fixed number of underlying promise reactions",
+      "passed": true,
+      "durationMs": 54
+    },
+    {
+      "candidate": "pr35",
+      "name": "controller keeps aged operation pending after budget expiry and classifies only next explicit refresh",
+      "passed": true,
+      "durationMs": 16
+    },
+    {
+      "candidate": "pr35",
+      "name": "controller replacement provider classifies independently and old late success cannot overwrite it",
+      "passed": true,
+      "durationMs": 10
+    },
+    {
+      "candidate": "current",
+      "name": "default preserves direct promise and synchronous error behavior",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "current",
+      "name": "constructor validates both caller budgets",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "current",
+      "name": "pending receipt deduplicates case variants and late answer is consumed once",
+      "passed": true,
+      "durationMs": 10
+    },
+    {
+      "candidate": "current",
+      "name": "receipt and transaction requests use independent caches",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "current",
+      "name": "replacement provider with same hash has independent lookup",
+      "passed": true,
+      "durationMs": 8
+    },
+    {
+      "candidate": "current",
+      "name": "event-loop delayed success remains available to the next explicit refresh",
+      "passed": true,
+      "durationMs": 25
+    },
+    {
+      "candidate": "current",
+      "name": "event-loop delayed rejection preserves timeout then original error",
+      "passed": true,
+      "durationMs": 25
+    },
+    {
+      "candidate": "current",
+      "name": "mixed-age waiters deliver to eligible waiter without retaining consumed answer",
+      "passed": true,
+      "durationMs": 71
+    },
+    {
+      "candidate": "current",
+      "name": "normal errors and synchronous opt-in errors preserve error identity and retry",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "current",
+      "name": "late rejection is handled and available to the next explicit refresh",
+      "passed": true,
+      "durationMs": 9
+    },
+    {
+      "candidate": "current",
+      "name": "completed answer expires autonomously and later refresh retries",
+      "passed": true,
+      "durationMs": 38
+    },
+    {
+      "candidate": "current",
+      "name": "fresh completed answer consumption clears its expiry timer",
+      "passed": true,
+      "durationMs": 9
+    },
+    {
+      "candidate": "current",
+      "name": "expired completed answer is rejected even before its cleanup timer can run",
+      "passed": true,
+      "durationMs": 34
+    },
+    {
+      "candidate": "current",
+      "name": "BUG: same-job disposal prevents a provider request that has not started yet",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "current",
+      "name": "disposal rejects active waiters, clears timers, blocks new opt-in requests and tolerates late settlement",
+      "passed": true,
+      "durationMs": 0
+    },
+    {
+      "candidate": "current",
+      "name": "disposal clears completed-answer metadata timer and late rejection handler remains safe",
+      "passed": true,
+      "durationMs": 17
+    },
+    {
+      "candidate": "current",
+      "name": "repeated timed-out refreshes attach a fixed number of underlying promise reactions",
+      "passed": true,
+      "durationMs": 54
+    },
+    {
+      "candidate": "current",
+      "name": "controller keeps aged operation pending after budget expiry and classifies only next explicit refresh",
+      "passed": true,
+      "durationMs": 12
+    },
+    {
+      "candidate": "current",
+      "name": "controller replacement provider classifies independently and old late success cannot overwrite it",
+      "passed": true,
+      "durationMs": 10
+    },
+    {
+      "name": "no unhandled promise rejections",
+      "passed": true
+    }
+  ]
+}

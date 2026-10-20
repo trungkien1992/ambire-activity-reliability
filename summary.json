@@ -1,0 +1,206 @@
+{
+  "controllerExecutions": 156,
+  "controllerPassed": 156,
+  "controllerFailed": 0,
+  "uniqueControllerScenarios": 13,
+  "repeatsPerVersion": 3,
+  "helperChecksPassed": 39,
+  "helperChecksFailed": 0,
+  "httpScenariosPassed": 4,
+  "httpScenarioCount": 4,
+  "strictHelperTypecheckPassed": true,
+  "sourceFormattingPassed": true,
+  "preservedConcurrentLoadRun": {
+    "passed": 155,
+    "failed": 1,
+    "failedCases": [
+      {
+        "label": "pr35-candidate",
+        "scenarioId": "A12",
+        "name": "30-minute operation remains eligible after activity deadline",
+        "repetition": 2,
+        "verdict": "FAIL",
+        "error": "AssertionError [ERR_ASSERTION]: activity refresh exceeded local scheduling allowance: 284.50787500000297 [machine-specific stack frames omitted for publication]"
+      }
+    ]
+  },
+  "measurements": [
+    {
+      "label": "pr35-baseline",
+      "medianRefreshMs": 602.773,
+      "rangeMs": [
+        601.207,
+        602.773,
+        604.855
+      ],
+      "medianRecoveryMs": null,
+      "runs": 3
+    },
+    {
+      "label": "pr35-candidate",
+      "medianRefreshMs": 123.412,
+      "rangeMs": [
+        124.357,
+        122.636,
+        123.412
+      ],
+      "medianRecoveryMs": 2.832,
+      "runs": 3
+    },
+    {
+      "label": "current-baseline",
+      "medianRefreshMs": 602.901,
+      "rangeMs": [
+        603.971,
+        601.911,
+        602.901
+      ],
+      "medianRecoveryMs": null,
+      "runs": 3
+    },
+    {
+      "label": "current-candidate",
+      "medianRefreshMs": 122.909,
+      "rangeMs": [
+        122.909,
+        123.394,
+        121.94
+      ],
+      "medianRecoveryMs": 1.715,
+      "runs": 3
+    }
+  ],
+  "cases": [
+    {
+      "id": "A01",
+      "name": "timely successful receipt",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 0,
+      "failures": 0
+    },
+    {
+      "id": "A02",
+      "name": "timely reverted receipt",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 0,
+      "failures": 0
+    },
+    {
+      "id": "A03",
+      "name": "receipt unavailable, transaction unavailable",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 0,
+      "failures": 0
+    },
+    {
+      "id": "A04",
+      "name": "timely provider error stays unresolved",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 0,
+      "failures": 0
+    },
+    {
+      "id": "A05",
+      "name": "slow success and explicit recovery",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 6,
+      "failures": 0
+    },
+    {
+      "id": "A06",
+      "name": "slow revert and explicit recovery",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 6,
+      "failures": 0
+    },
+    {
+      "id": "A07",
+      "name": "slow provider error and explicit error delivery",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 6,
+      "failures": 0
+    },
+    {
+      "id": "A08",
+      "name": "slow transaction lookup after null receipt",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 6,
+      "failures": 0
+    },
+    {
+      "id": "A09",
+      "name": "fast operation remains visible alongside slow operation",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 6,
+      "failures": 0
+    },
+    {
+      "id": "A10",
+      "name": "repeated refreshes reuse one outstanding receipt lookup",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 6,
+      "failures": 0
+    },
+    {
+      "id": "A11",
+      "name": "concurrent refreshes share existing controller work",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 6,
+      "failures": 0
+    },
+    {
+      "id": "A12",
+      "name": "30-minute operation remains eligible after activity deadline",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 6,
+      "failures": 0
+    },
+    {
+      "id": "A13",
+      "name": "options omitted preserve upstream behavior",
+      "level": "MUST (scoped prototype consumer contract)",
+      "executions": 12,
+      "referenceBehaviorPass": 6,
+      "candidateBehaviorPass": 6,
+      "baselineResponsivenessXfail": 0,
+      "failures": 0
+    }
+  ],
+  "partialCoverageOnly": true
+}

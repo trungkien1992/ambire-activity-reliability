@@ -1,0 +1,26 @@
+{
+  "name": "wallet-activity-reliability-check",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node run.mjs",
+    "prepare:sources": "node prepare-sources.mjs",
+    "test:http": "node http-smoke.mjs",
+    "test:review": "node ../review/helper-check.mjs",
+    "check:source": "node check-source.mjs"
+  },
+  "dependencies": {
+    "ethers": "6.16.0",
+    "idb": "8.0.3",
+    "tldts": "7.0.17",
+    "uuid": "9.0.0",
+    "viem": "2.45.2"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "prettier": "3.3.3",
+    "typescript": "5.9.3"
+  }
+}

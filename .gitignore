@@ -1,0 +1,7 @@
+sources/
+harness/node_modules/
+harness/bundles/
+harness/build-provenance.json
+harness/activityLookup.typecheck.ts
+**/*console.log
+.DS_Store

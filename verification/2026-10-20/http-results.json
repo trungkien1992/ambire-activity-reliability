@@ -1,0 +1,381 @@
+{
+  "scope": "Actual upstream provider factory and ActivityController; controlled ProvidersController, storage, account and portfolio collaborators; local HTTP only.",
+  "rpcDelayMs": 600,
+  "activityBudgetMs": 120,
+  "localOnly": true,
+  "fixtures": "One ordinary synthetic EOA transaction; no signing or broadcast; JSON-RPC receipt status1 at block100.",
+  "productionOrBrowserClaims": false,
+  "scenarios": [
+    {
+      "label": "pr35-baseline",
+      "bundleSha256": "df9b3d18ca5ddf2a5522ee607bbac1d89b4c4eb7cd4764e7e30ca8a759ae59cf",
+      "providerClass": "JsonRpcProvider",
+      "transportTimeoutMs": 300000,
+      "providerOptionsForSmoke": {
+        "batchMaxCount": 1,
+        "cacheTimeout": -1
+      },
+      "candidateOptions": null,
+      "firstRefresh": {
+        "elapsedMs": 626.228,
+        "operation": {
+          "id": "controlled-slow-operation",
+          "txnId": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "success",
+          "blockNumber": 100
+        },
+        "errors": [],
+        "metrics": {
+          "writes": 1,
+          "updates": 2,
+          "errors": 0,
+          "portfolioCalls": 2,
+          "peakConcurrentWrites": 1
+        }
+      },
+      "backgroundReceiptLookupNote": "With balanceChanges initially undefined, upstream activity filtering additionally fetches the receipt for balance-change backfill; this path is retained and counted.",
+      "formattedOperation": {
+        "status": "success",
+        "blockNumber": 100,
+        "blockHash": "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "gasUsed": "0x5208"
+      },
+      "formattedReceipts": [
+        {
+          "className": "TransactionReceipt",
+          "status": 1,
+          "statusType": "number",
+          "blockNumber": 100,
+          "blockNumberType": "number",
+          "gasUsed": "21000",
+          "gasUsedType": "bigint"
+        },
+        {
+          "className": "TransactionReceipt",
+          "status": 1,
+          "statusType": "number",
+          "blockNumber": 100,
+          "blockNumberType": "number",
+          "gasUsed": "21000",
+          "gasUsedType": "bigint"
+        }
+      ],
+      "httpRequests": 2,
+      "rpcMethods": {
+        "eth_getTransactionReceipt": 2
+      },
+      "networkRequests": [
+        {
+          "method": "eth_getTransactionReceipt",
+          "params": [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "receivedAtMs": 12.056791999999973
+        },
+        {
+          "method": "eth_getTransactionReceipt",
+          "params": [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "receivedAtMs": 629.762667
+        }
+      ],
+      "receiptResponses": 2,
+      "unexpectedMethods": [],
+      "serverErrors": [],
+      "passed": true
+    },
+    {
+      "label": "pr35-candidate",
+      "bundleSha256": "e3f3b1c8fc518fdb61724c3d053e6f0a34b81c17f76f1da902e547373a56b5a6",
+      "providerClass": "JsonRpcProvider",
+      "transportTimeoutMs": 300000,
+      "providerOptionsForSmoke": {
+        "batchMaxCount": 1,
+        "cacheTimeout": -1
+      },
+      "candidateOptions": {
+        "timeoutMs": 120
+      },
+      "firstRefresh": {
+        "elapsedMs": 126.464,
+        "operation": {
+          "id": "controlled-slow-operation",
+          "txnId": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "broadcasted-but-not-confirmed"
+        },
+        "errors": [
+          {
+            "atMs": 126,
+            "level": "silent",
+            "message": "Failed to determine transaction status on network with id 1 for 0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
+            "errorName": "ActivityLookupTimeoutError",
+            "errorMessage": "Transaction status is not available yet. It will be checked again."
+          }
+        ],
+        "metrics": {
+          "writes": 1,
+          "updates": 2,
+          "errors": 1,
+          "portfolioCalls": 0,
+          "peakConcurrentWrites": 1
+        }
+      },
+      "afterLateResponseBeforeExplicitRefresh": {
+        "id": "controlled-slow-operation",
+        "txnId": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "broadcasted-but-not-confirmed"
+      },
+      "recoveryRefresh": {
+        "elapsedMs": 3.401,
+        "operation": {
+          "id": "controlled-slow-operation",
+          "txnId": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "success",
+          "blockNumber": 100
+        },
+        "additionalRpcRequests": 0
+      },
+      "backgroundReceiptLookupNote": "With balanceChanges initially undefined, upstream activity filtering additionally fetches the receipt for balance-change backfill; this path is retained and counted.",
+      "formattedOperation": {
+        "status": "success",
+        "blockNumber": 100,
+        "blockHash": "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "gasUsed": "0x5208"
+      },
+      "formattedReceipts": [
+        {
+          "className": "TransactionReceipt",
+          "status": 1,
+          "statusType": "number",
+          "blockNumber": 100,
+          "blockNumberType": "number",
+          "gasUsed": "21000",
+          "gasUsedType": "bigint"
+        },
+        {
+          "className": "TransactionReceipt",
+          "status": 1,
+          "statusType": "number",
+          "blockNumber": 100,
+          "blockNumberType": "number",
+          "gasUsed": "21000",
+          "gasUsedType": "bigint"
+        }
+      ],
+      "httpRequests": 2,
+      "rpcMethods": {
+        "eth_getTransactionReceipt": 2
+      },
+      "networkRequests": [
+        {
+          "method": "eth_getTransactionReceipt",
+          "params": [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "receivedAtMs": 3.426208000000088
+        },
+        {
+          "method": "eth_getTransactionReceipt",
+          "params": [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "receivedAtMs": 642.3628329999999
+        }
+      ],
+      "receiptResponses": 2,
+      "unexpectedMethods": [],
+      "serverErrors": [],
+      "passed": true
+    },
+    {
+      "label": "current-baseline",
+      "bundleSha256": "0f94c3b6539aa6373532340a4ca7cb741e7107c11f5b7a0f9490b5ed72a630b5",
+      "providerClass": "_FetchJsonRpcProvider",
+      "transportTimeoutMs": 300000,
+      "providerOptionsForSmoke": {
+        "batchMaxCount": 1,
+        "cacheTimeout": -1
+      },
+      "candidateOptions": null,
+      "firstRefresh": {
+        "elapsedMs": 643.237,
+        "operation": {
+          "id": "controlled-slow-operation",
+          "txnId": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "success",
+          "blockNumber": 100
+        },
+        "errors": [],
+        "metrics": {
+          "writes": 1,
+          "updates": 2,
+          "errors": 0,
+          "portfolioCalls": 3,
+          "peakConcurrentWrites": 1
+        }
+      },
+      "backgroundReceiptLookupNote": "With balanceChanges initially undefined, upstream activity filtering additionally fetches the receipt for balance-change backfill; this path is retained and counted.",
+      "formattedOperation": {
+        "status": "success",
+        "blockNumber": 100,
+        "blockHash": "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "gasUsed": "0x5208"
+      },
+      "formattedReceipts": [
+        {
+          "className": "TransactionReceipt",
+          "status": 1,
+          "statusType": "number",
+          "blockNumber": 100,
+          "blockNumberType": "number",
+          "gasUsed": "21000",
+          "gasUsedType": "bigint"
+        },
+        {
+          "className": "TransactionReceipt",
+          "status": 1,
+          "statusType": "number",
+          "blockNumber": 100,
+          "blockNumberType": "number",
+          "gasUsed": "21000",
+          "gasUsedType": "bigint"
+        }
+      ],
+      "httpRequests": 2,
+      "rpcMethods": {
+        "eth_getTransactionReceipt": 2
+      },
+      "networkRequests": [
+        {
+          "method": "eth_getTransactionReceipt",
+          "params": [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "receivedAtMs": 29.11508300000014
+        },
+        {
+          "method": "eth_getTransactionReceipt",
+          "params": [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "receivedAtMs": 645.860083
+        }
+      ],
+      "receiptResponses": 2,
+      "unexpectedMethods": [],
+      "serverErrors": [],
+      "passed": true
+    },
+    {
+      "label": "current-candidate",
+      "bundleSha256": "aad33835f3d6a98add6b989c6e67b0b05958b19ad0ff58356df5c6b37603e45c",
+      "providerClass": "_FetchJsonRpcProvider",
+      "transportTimeoutMs": 300000,
+      "providerOptionsForSmoke": {
+        "batchMaxCount": 1,
+        "cacheTimeout": -1
+      },
+      "candidateOptions": {
+        "timeoutMs": 120
+      },
+      "firstRefresh": {
+        "elapsedMs": 124.99,
+        "operation": {
+          "id": "controlled-slow-operation",
+          "txnId": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "broadcasted-but-not-confirmed"
+        },
+        "errors": [
+          {
+            "atMs": 125,
+            "level": "silent",
+            "message": "Failed to determine transaction status on network with id 1 for 0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
+            "errorName": "ActivityLookupTimeoutError",
+            "errorMessage": "Transaction status is not available yet. It will be checked again."
+          }
+        ],
+        "metrics": {
+          "writes": 1,
+          "updates": 2,
+          "errors": 1,
+          "portfolioCalls": 0,
+          "peakConcurrentWrites": 1
+        }
+      },
+      "afterLateResponseBeforeExplicitRefresh": {
+        "id": "controlled-slow-operation",
+        "txnId": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "broadcasted-but-not-confirmed"
+      },
+      "recoveryRefresh": {
+        "elapsedMs": 2.455,
+        "operation": {
+          "id": "controlled-slow-operation",
+          "txnId": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "success",
+          "blockNumber": 100
+        },
+        "additionalRpcRequests": 0
+      },
+      "backgroundReceiptLookupNote": "With balanceChanges initially undefined, upstream activity filtering additionally fetches the receipt for balance-change backfill; this path is retained and counted.",
+      "formattedOperation": {
+        "status": "success",
+        "blockNumber": 100,
+        "blockHash": "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "gasUsed": "0x5208"
+      },
+      "formattedReceipts": [
+        {
+          "className": "TransactionReceipt",
+          "status": 1,
+          "statusType": "number",
+          "blockNumber": 100,
+          "blockNumberType": "number",
+          "gasUsed": "21000",
+          "gasUsedType": "bigint"
+        },
+        {
+          "className": "TransactionReceipt",
+          "status": 1,
+          "statusType": "number",
+          "blockNumber": 100,
+          "blockNumberType": "number",
+          "gasUsed": "21000",
+          "gasUsedType": "bigint"
+        }
+      ],
+      "httpRequests": 2,
+      "rpcMethods": {
+        "eth_getTransactionReceipt": 2
+      },
+      "networkRequests": [
+        {
+          "method": "eth_getTransactionReceipt",
+          "params": [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "receivedAtMs": 5.066124999999374
+        },
+        {
+          "method": "eth_getTransactionReceipt",
+          "params": [
+            "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "receivedAtMs": 639.7754999999997
+        }
+      ],
+      "receiptResponses": 2,
+      "unexpectedMethods": [],
+      "serverErrors": [],
+      "passed": true
+    }
+  ],
+  "success": true,
+  "listenHost": "127.0.0.1",
+  "resourceCleanup": {
+    "serverListening": false,
+    "pendingFixtureResponseTimers": 0,
+    "providerDestroyCalledPerScenario": true
+  }
+}

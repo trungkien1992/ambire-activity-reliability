@@ -1,0 +1,28 @@
+{
+  "upstreamRepository": "https://github.com/AmbireTech/ambire-common.git",
+  "sourcePins": {
+    "pr35": "1444b312e28be8271632e6d869d4b60598d908fe",
+    "current": "1d8795e3775d69c688a8d463623bedf8255c20d9"
+  },
+  "candidateFiles": {
+    "pr35": {
+      "src/controllers/activity/activity.ts": "2a56bc779cd5dd3047be586798a0557569a601e33a8ecfe0fad597178c76b31e",
+      "src/libs/activity/activityLookup.ts": "4a13b8296ceb3d9b7c1e5884f66a6631dec2ef8fbcfaa2602847fe0f5f291c05"
+    },
+    "current": {
+      "src/controllers/activity/activity.ts": "9e58561a5349e704c18544a9d91fbe9abb1b80feb8b0252ccf0330f0ee41b713",
+      "src/libs/activity/activityLookup.ts": "4a13b8296ceb3d9b7c1e5884f66a6631dec2ef8fbcfaa2602847fe0f5f291c05"
+    }
+  },
+  "patches": {
+    "pr35": {
+      "path": "patches/pr35-activity-refresh.patch",
+      "sha256": "a0e067a2cc599810393bce770de288f0ca8094afcb5599a90b193fd16a3d0c23"
+    },
+    "current": {
+      "path": "patches/current-activity-refresh.patch",
+      "sha256": "9cc1a9a1a881867d25fd74b10e7a0bf2a245030bf03b9a1328e3a41f01e2a3dd"
+    }
+  },
+  "licenseNote": "Upstream source is fetched from its repository; only original harness and proposed diffs are packaged. No license grant for upstream code is asserted."
+}

@@ -1,0 +1,300 @@
+--- a/src/controllers/activity/activity.ts
++++ b/src/controllers/activity/activity.ts
+@@ -50,6 +50,11 @@
+ import { parseLogs } from '../../libs/userOperation/userOperation'
+ import { getDebugTraceTransaction } from '../../utils/debugTransaction'
+ import { getAddressCaught } from '../../utils/getAddressCaught'
++import {
++  ActivityLookupOptions,
++  ActivityLookups,
++  ActivityLookupTimeoutError
++} from '../../libs/activity/activityLookup'
+ import wait from '../../utils/wait'
+ import EventEmitter from '../eventEmitter/eventEmitter'
+ import { InternalSignedMessages, SentToHistory, SignedMessage } from './types'
+@@ -326,6 +331,8 @@
+     }
+   } = {}
+ 
++  #activityLookups: ActivityLookups
++
+   #providers: IProvidersController
+ 
+   #networks: INetworksController
+@@ -385,7 +392,8 @@
+     featureFlags: IFeatureFlagsController,
+     onContractsDeployed: (network: Network) => Promise<void>,
+     eventEmitterRegistry?: IEventEmitterRegistryController,
+-    idb?: AmbireIdbDatabase
++    idb?: AmbireIdbDatabase,
++    activityLookupOptions: ActivityLookupOptions = {}
+   ) {
+     super(eventEmitterRegistry)
+     this.#storage = storage
+@@ -403,6 +411,7 @@
+     this.#accounts = accounts
+     this.#selectedAccount = selectedAccount
+     this.#providers = providers
++    this.#activityLookups = new ActivityLookups(activityLookupOptions)
+     this.#networks = networks
+     this.#portfolio = portfolio
+     this.#safe = safe
+@@ -411,6 +420,11 @@
+     this.#initialLoadPromise = this.#load().finally(() => {
+       this.#initialLoadPromise = undefined
+     })
++  }
++
++  destroy() {
++    this.#activityLookups.dispose()
++    super.destroy()
+   }
+ 
+   async #load(): Promise<void> {
+@@ -1511,6 +1525,7 @@
+             let firstReceiptBlockNumber: number | undefined
+             let lastReceiptBlockNumber: number | undefined
+             let shouldScheduleBalanceChangesTask = false
++            let activityLookupTimedOut = false
+             const foundTokensForBalanceChanges = new Set<string>()
+             const receiptsForBalanceChanges: BalanceChangesReceipt[] = []
+ 
+@@ -1565,7 +1580,9 @@
+ 
+               const receipts = await Promise.all(
+                 // no catch, throw an error if one promise doesn't complete
+-                txIds.map((txnId) => (txnId ? provider.getTransactionReceipt(txnId) : null))
++                txIds.map((txnId) =>
++                  txnId ? this.#activityLookups.getReceipt(provider, txnId) : null
++                )
+               )
+               for (let i = 0; i < receipts.length; i++) {
+                 let receipt = receipts[i]
+@@ -1588,7 +1605,7 @@
+                     accountOp.txnId = frontRanTxnId
+                     markMutated(accountOp)
+ 
+-                    receipt = await provider.getTransactionReceipt(frontRanTxnId)
++                    receipt = await this.#activityLookups.getReceipt(provider, frontRanTxnId)
+                     if (!receipt) return
+                   }
+ 
+@@ -1673,11 +1690,14 @@
+                 // if there's no receipt, confirm there's a txn
+                 // if it remains unresolved for 30 minutes, declare it stuck
+ 
+-                const txn = txnId ? await provider.getTransaction(txnId) : null
++                const txn = txnId
++                  ? await this.#activityLookups.getTransaction(provider, txnId)
++                  : null
+ 
+                 if (txn) continue
+               }
+             } catch (error) {
++              activityLookupTimedOut = error instanceof ActivityLookupTimeoutError
+               this.emitError({
+                 level: 'silent',
+                 message: `Failed to determine transaction status on network with id ${accountOp.chainId} for ${accountOp.txnId}.`,
+@@ -1689,7 +1709,9 @@
+                       )
+               })
+             } finally {
+-              declareStuckIfExpired(accountOp)
++              // An activity budget expiry is not a settled provider answer. Keep
++              // the operation eligible for the next refresh and its late receipt.
++              if (!activityLookupTimedOut) declareStuckIfExpired(accountOp)
+             }
+ 
+             if (shouldScheduleBalanceChangesTask && typeof lastReceiptBlockNumber !== 'undefined') {
+--- /dev/null
++++ b/src/libs/activity/activityLookup.ts
+@@ -0,0 +1,189 @@
++import type { JsonRpcProvider, TransactionReceipt, TransactionResponse } from 'ethers'
++
++/** Optional budget for individual receipt and transaction lookups during an activity refresh. */
++export interface ActivityLookupOptions {
++  timeoutMs?: number
++  maxResultAgeMs?: number
++}
++
++/** A lookup timeout leaves the submitted transaction unresolved. */
++export class ActivityLookupTimeoutError extends Error {
++  constructor() {
++    super('Transaction status is not available yet. It will be checked again.')
++    this.name = 'ActivityLookupTimeoutError'
++  }
++}
++
++interface LookupWaiter<T> {
++  settle: (outcome: LookupOutcome<T>) => boolean
++  expire: () => void
++}
++
++type LookupOutcome<T> = { ok: true; value: T } | { ok: false; error: unknown }
++
++interface LookupEntry<T> {
++  waiters: Set<LookupWaiter<T>>
++  outcome?: LookupOutcome<T>
++  completedAt?: number
++  expiryTimer?: ReturnType<typeof setTimeout>
++  released: boolean
++  clear: () => void
++}
++
++type Provider = Pick<JsonRpcProvider, 'getTransactionReceipt' | 'getTransaction'>
++
++/**
++ * Opt-in deadlines around existing providers. A timeout does not cancel the
++ * transport. Reuse an outstanding lookup across refreshes until it settles so
++ * a shorter activity budget does not multiply requests to a slow provider.
++ */
++export class ActivityLookups {
++  #timeoutMs: number | undefined
++
++  #maxResultAgeMs: number
++
++  #receipts = new WeakMap<Provider, Map<string, LookupEntry<TransactionReceipt | null>>>()
++
++  #transactions = new WeakMap<Provider, Map<string, LookupEntry<TransactionResponse | null>>>()
++
++  #releaseLookups = new Set<() => void>()
++
++  #disposed = false
++
++  constructor({ timeoutMs, maxResultAgeMs = 30_000 }: ActivityLookupOptions = {}) {
++    if (
++      timeoutMs !== undefined &&
++      (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2_147_483_647)
++    ) {
++      throw new RangeError(
++        'Choose a whole-number lookup timeout between 1 and 2147483647 milliseconds.'
++      )
++    }
++    if (!Number.isInteger(maxResultAgeMs) || maxResultAgeMs < 1 || maxResultAgeMs > 2_147_483_647) {
++      throw new RangeError(
++        'Choose a whole-number result age between 1 and 2147483647 milliseconds.'
++      )
++    }
++    this.#timeoutMs = timeoutMs
++    this.#maxResultAgeMs = maxResultAgeMs
++  }
++
++  getReceipt(provider: Provider, txnId: string): Promise<TransactionReceipt | null> {
++    return this.#lookup(provider, txnId, this.#receipts, () =>
++      provider.getTransactionReceipt(txnId)
++    )
++  }
++
++  getTransaction(provider: Provider, txnId: string): Promise<TransactionResponse | null> {
++    return this.#lookup(provider, txnId, this.#transactions, () => provider.getTransaction(txnId))
++  }
++
++  /** Release owned waiters and lookup metadata; the provider still owns in-flight requests. */
++  dispose() {
++    this.#disposed = true
++    for (const release of Array.from(this.#releaseLookups)) release()
++  }
++
++  #lookup<T>(
++    provider: Provider,
++    txnId: string,
++    cache: WeakMap<Provider, Map<string, LookupEntry<T>>>,
++    request: () => Promise<T>
++  ): Promise<T> {
++    // Preserve existing behavior when no activity budget was selected.
++    if (this.#timeoutMs === undefined) return request()
++    if (this.#disposed) return Promise.reject(new ActivityLookupTimeoutError())
++
++    let byTxnId = cache.get(provider)
++    if (!byTxnId) {
++      byTxnId = new Map()
++      cache.set(provider, byTxnId)
++    }
++    const key = txnId.toLowerCase()
++    let entry = byTxnId.get(key)
++    if (entry?.outcome && entry.completedAt !== undefined) {
++      const outcome = entry.outcome
++      const isFresh = performance.now() - entry.completedAt < this.#maxResultAgeMs
++      entry.clear()
++      if (isFresh)
++        return outcome.ok ? Promise.resolve(outcome.value) : Promise.reject(outcome.error)
++      entry = undefined
++      // clear() may remove the empty provider map. Register it again for a new lookup.
++      cache.set(provider, byTxnId)
++    }
++    if (!entry) {
++      const capturedMap = byTxnId
++      const clear = () => {
++        captured.released = true
++        clearTimeout(captured.expiryTimer)
++        if (capturedMap.get(key) === captured) capturedMap.delete(key)
++        if (capturedMap.size === 0) cache.delete(provider)
++        this.#releaseLookups.delete(release)
++      }
++      const release = () => {
++        clear()
++        for (const waiter of captured.waiters) waiter.expire()
++        captured.waiters.clear()
++      }
++      const captured: LookupEntry<T> = { waiters: new Set(), released: false, clear }
++      entry = captured
++      byTxnId.set(key, entry)
++      this.#releaseLookups.add(release)
++      const settle = (outcome: LookupOutcome<T>) => {
++        if (captured.released) return
++        let deliveredWithinBudget = false
++        for (const waiter of captured.waiters) {
++          if (waiter.settle(outcome)) deliveredWithinBudget = true
++        }
++        captured.waiters.clear()
++        if (deliveredWithinBudget) {
++          clear()
++        } else {
++          // Also retain answers when an event-loop delay left an expired waiter
++          // in the set. No late continuation may mutate Activity outside a refresh.
++          captured.outcome = outcome
++          captured.completedAt = performance.now()
++          captured.expiryTimer = setTimeout(clear, this.#maxResultAgeMs)
++        }
++      }
++      // Attach one settlement handler per underlying request. Expired refresh
++      // waiters are removed from the set, not retained as Promise.race reactions.
++      Promise.resolve()
++        .then(() => {
++          if (captured.released || this.#disposed) throw new ActivityLookupTimeoutError()
++          return request()
++        })
++        .then(
++          (value) => settle({ ok: true, value }),
++          (error: unknown) => settle({ ok: false, error })
++        )
++    }
++    return this.#waitForEntry(entry, this.#timeoutMs)
++  }
++
++  #waitForEntry<T>(entry: LookupEntry<T>, timeoutMs: number): Promise<T> {
++    const started = performance.now()
++    return new Promise<T>((resolve, reject) => {
++      const finish = () => {
++        clearTimeout(timer)
++        entry.waiters.delete(waiter)
++      }
++      const waiter: LookupWaiter<T> = {
++        settle: (outcome) => {
++          const withinBudget = performance.now() - started < timeoutMs
++          finish()
++          if (!withinBudget) reject(new ActivityLookupTimeoutError())
++          else if (outcome.ok) resolve(outcome.value)
++          else reject(outcome.error)
++          return withinBudget
++        },
++        expire: () => {
++          finish()
++          reject(new ActivityLookupTimeoutError())
++        }
++      }
++      const timer = setTimeout(() => waiter.expire(), timeoutMs)
++      entry.waiters.add(waiter)
++    })
++  }
++}

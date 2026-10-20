@@ -1,0 +1,35 @@
+{
+  "verifiedOn": "2026-10-20",
+  "scope": "Fresh documented bootstrap and checks against the same immutable14October pins, not current v2. No browser/private-transport validation.",
+  "commands": [
+    "npm ci --ignore-scripts --no-audit --no-fund",
+    "npm run prepare:sources",
+    "npm run build",
+    "npm run check:source",
+    "npm test",
+    "npm run test:review",
+    "npm run test:http"
+  ],
+  "controllerExecutions": 156,
+  "controllerPassing": 156,
+  "controllerFailing": 0,
+  "helperChecksPassing": 39,
+  "helperChecksFailing": 0,
+  "httpVariantsPassing": 4,
+  "httpVariantsFailing": 0,
+  "sourceChecksPassed": true,
+  "codeSha256": {
+    "harness/build.mjs": "6b289b6bf63693588649c062143babe745ac1dfb90b9aa58c6af4983a27168bc",
+    "harness/check-source.mjs": "626ed59576bb4ee0606688b88f286e6fbe8e17ebe6a07e66d280e3152e55733a",
+    "harness/controller-fixture.mjs": "be349f7e6db9c434ee8a4f04af6c35e06c800531e07cd9f16de9a66cd56ec417",
+    "harness/http-smoke.mjs": "efc6ef53b890ce6d3c32464e9ee6a90db1636770fc39c903380a4dc802174d4a",
+    "harness/package-lock.json": "f1223566e17c0af9bc49bc859a40c12eba122f790912c48a66a612b3df1d2d2c",
+    "harness/package.json": "41a67568d07065310ff40a3bdf512086af5c388fcbcff854c30c4e7a021b99c1",
+    "harness/prepare-sources.mjs": "3c65b1d2186b32eb733d266369b70a7e64f54d1a17e185db21fb349df97f1c74",
+    "harness/run.mjs": "4d5cc459b0916a7179e9c3e55dec8e798a0c1ab91f928d8e633213cc084a56f6",
+    "patches/current-activity-refresh.patch": "9cc1a9a1a881867d25fd74b10e7a0bf2a245030bf03b9a1328e3a41f01e2a3dd",
+    "patches/pr35-activity-refresh.patch": "a0e067a2cc599810393bce770de288f0ca8094afcb5599a90b193fd16a3d0c23",
+    "review/helper-check.mjs": "9e6582d40f182067812a6bdbb1b03356eb6424a0d33af3fc4ba18ad9549f61a5",
+    "sources.json": "c5ddb79e1f298355591e3111f905e0756f48c3a2756e1880e05404d4ce1b9126"
+  }
+}
